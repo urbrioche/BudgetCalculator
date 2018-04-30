@@ -29,6 +29,13 @@ namespace BudgetCalculator
         {
             return EndDate.MonthDifference(StartDate);
         }
+
+        public Period OverlappingDays(Budget budget)
+        {
+            var effectiveStart = StartDate > budget.FirstDay ? StartDate : budget.FirstDay;
+            var effectiveEnd = EndDate < budget.LastDay ? EndDate : budget.LastDay;
+            return new Period(effectiveStart, effectiveEnd);            
+        }
     }
 
     internal class Accounting
@@ -48,46 +55,36 @@ namespace BudgetCalculator
             }
 
             var period = new Period(start, end);
+            var budgets = this._repo.GetAll();
             return period.IsSameMonth()
-                ? GetOneMonthAmount(new Period(start, end))
-                : GetRangeMonthAmount(new Period(start, end));
+                ? GetOneMonthAmount(new Period(start, end), budgets)
+                : GetRangeMonthAmount(new Period(start, end), budgets);
         }
 
-        private decimal GetRangeMonthAmount(Period period)
+        private decimal GetRangeMonthAmount(Period period, List<Budget> budgets)
         {
             var monthCount = period.MonthCount();
             var total = 0;
             for (var index = 0; index <= monthCount; index++)
             {
-                var effectivePeriod = EffectivePeriod(period, index, monthCount);
-                total += GetOneMonthAmount(effectivePeriod);
+                var budget = GetBudgetByCurrentPeriod(period, budgets, index);
+                if (budget == null)
+                {
+                    continue;
+                }
+                var effectivePeriod = period.OverlappingDays(budget);
+                total += GetOneMonthAmount(effectivePeriod, budgets);
             }
             return total;
         }
 
-        private static Period EffectivePeriod(Period period, int index, int monthCount)
+        private static Budget GetBudgetByCurrentPeriod(Period period, List<Budget> budgets, int index)
         {
-            Period effectivePeriod;
-            if (index == 0)
-            {
-                effectivePeriod = new Period(period.StartDate, period.StartDate.LastDate());
-            }
-            else if (index == monthCount)
-            {
-                effectivePeriod = new Period(period.EndDate.FirstDate(), period.EndDate);
-            }
-            else
-            {
-                var now = period.StartDate.AddMonths(index);
-                effectivePeriod = new Period(now.FirstDate(), now.LastDate());
-            }
-
-            return effectivePeriod;
+            return budgets.FirstOrDefault(b => b.YearMonth == period.StartDate.AddMonths(index).ToString("yyyyMM"));
         }
 
-        private int GetOneMonthAmount(Period period)
+        private int GetOneMonthAmount(Period period, List<Budget> budgets)
         {
-            var budgets = this._repo.GetAll();
             var budget = budgets.Get(period.StartDate);
             if (budget == null)
             {
