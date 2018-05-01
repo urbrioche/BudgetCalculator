@@ -10,6 +10,10 @@ namespace BudgetCalculator
     {
         public Period(DateTime startDate, DateTime endDate)
         {
+            if (startDate > endDate)
+            {
+                throw new ArgumentException();
+            }
             StartDate = startDate;
             EndDate = endDate;
         }
@@ -41,8 +45,13 @@ namespace BudgetCalculator
 
         public int OverlappingDays(Period period)
         {
+            if (EndDate < period.StartDate || StartDate > period.EndDate)
+            {
+                return 0;
+            }
             var effectiveStart = StartDate > period.StartDate ? StartDate : period.StartDate;
             var effectiveEnd = EndDate < period.EndDate ? EndDate : period.EndDate;
+
             return new Period(effectiveStart, effectiveEnd).TotalDays();
         }
     }
@@ -58,13 +67,14 @@ namespace BudgetCalculator
 
         public decimal TotalAmount(DateTime start, DateTime end)
         {
-            if (start > end)
-            {
-                throw new ArgumentException();
-            }
+            //if (start > end)
+            //{
+            //    throw new ArgumentException();
+            //}
 
+            var period = new Period(start, end);
             var budgets = this._repo.GetAll();
-            return budgets.Sum(b => b.EffectiveAmount(new Period(start, end)));
+            return budgets.Sum(b => b.EffectiveAmount(period));
             //return period.IsSameMonth()
             //    ? GetOneMonthAmount(new Period(start, end), budgets)
             //    : GetRangeMonthAmount(new Period(start, end), budgets);
