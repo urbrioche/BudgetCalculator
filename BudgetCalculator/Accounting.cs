@@ -63,18 +63,11 @@ namespace BudgetCalculator
                 throw new ArgumentException();
             }
 
-            var period = new Period(start, end);
             var budgets = this._repo.GetAll();
-            return GetRangeMonthAmount(new Period(start, end), budgets);
+            return budgets.Sum(b => b.EffectiveAmount(new Period(start, end)));
             //return period.IsSameMonth()
             //    ? GetOneMonthAmount(new Period(start, end), budgets)
             //    : GetRangeMonthAmount(new Period(start, end), budgets);
-        }
-
-        private decimal GetRangeMonthAmount(Period period, List<Budget> budgets)
-        {
-            return budgets.Sum(b => b.EffectiveAmount(period));
-            
         }
 
         private static Budget GetBudgetByCurrentPeriod(Period period, List<Budget> budgets, int index)
