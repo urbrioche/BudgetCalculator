@@ -36,7 +36,14 @@ namespace BudgetCalculator
         {
             var effectiveStart = StartDate > period.StartDate ? StartDate : period.StartDate;
             var effectiveEnd = EndDate < period.EndDate ? EndDate : period.EndDate;
-            return new Period(effectiveStart, effectiveEnd);            
+            return new Period(effectiveStart, effectiveEnd);
+        }
+
+        public int OverlappingDays(Period period)
+        {
+            var effectiveStart = StartDate > period.StartDate ? StartDate : period.StartDate;
+            var effectiveEnd = EndDate < period.EndDate ? EndDate : period.EndDate;
+            return new Period(effectiveStart, effectiveEnd).TotalDays();
         }
     }
 
@@ -66,13 +73,11 @@ namespace BudgetCalculator
 
         private decimal GetRangeMonthAmount(Period period, List<Budget> budgets)
         {
-            var monthCount = period.MonthCount();
             var total = 0;
 
             foreach (var budget in budgets)
             {
-                var effectivePeriod = period.OverlappingPeriod(new Period(budget.FirstDay, budget.LastDay));
-                var amount = budget.DailyAmount() * effectivePeriod.TotalDays();
+                var amount = budget.DailyAmount() * period.OverlappingDays(new Period(budget.FirstDay, budget.LastDay));
                 total += amount;
             }
 
