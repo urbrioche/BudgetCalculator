@@ -40,7 +40,7 @@ namespace BudgetCalculator
         }
     }
 
-    internal class Accounting
+    public class Accounting
     {
         private readonly IRepository<Budget> _repo;
 
@@ -72,7 +72,7 @@ namespace BudgetCalculator
             foreach (var budget in budgets)
             {
                 var effectivePeriod = period.OverlappingPeriod(new Period(budget.FirstDay, budget.LastDay));
-                var amount = DailyAmount(effectivePeriod, budget) * effectivePeriod.TotalDays();
+                var amount = budget.DailyAmount() * effectivePeriod.TotalDays();
                 total += amount;
             }
 
@@ -107,12 +107,7 @@ namespace BudgetCalculator
             {
                 return 0;
             }
-            return DailyAmount(period, budget) * period.TotalDays();
-        }
-
-        private static int DailyAmount(Period period, Budget budget)
-        {
-            return budget.Amount / DaysInMonth(period);
+            return budget.DailyAmount() * period.TotalDays();
         }
 
         private static int DaysInMonth(Period period)

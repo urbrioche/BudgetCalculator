@@ -17,5 +17,15 @@ namespace BudgetCalculator
         {
             get { return DateTime.ParseExact(YearMonth + DateTime.DaysInMonth(FirstDay.Year, FirstDay.Month), "yyyyMMdd", null); }
         }
+
+        public int DailyAmount()
+        {
+            return Amount / TotalDays;
+        }
+
+        public int TotalDays
+        {
+            get { return (LastDay.AddDays(1) - FirstDay).Days; }
+        }
     }
 }
