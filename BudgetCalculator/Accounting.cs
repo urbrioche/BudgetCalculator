@@ -22,7 +22,7 @@ namespace BudgetCalculator
             return this.StartDate.Year == this.EndDate.Year && this.StartDate.Month == this.EndDate.Month;
         }
 
-        public int EffectiveDays()
+        public int TotalDays()
         {
             return (this.EndDate - this.StartDate).Days + 1;
         }
@@ -72,7 +72,7 @@ namespace BudgetCalculator
             foreach (var budget in budgets)
             {
                 var effectivePeriod = period.OverlappingPeriod(new Period(budget.FirstDay, budget.LastDay));
-                var amount = DailyAmount(effectivePeriod, budget) * effectivePeriod.EffectiveDays();
+                var amount = DailyAmount(effectivePeriod, budget) * effectivePeriod.TotalDays();
                 total += amount;
             }
 
@@ -87,7 +87,7 @@ namespace BudgetCalculator
             //    }
             //    var effectivePeriod = period.OverlappingPeriod(budget);
             //    ////var effectiveDays = (effectivePeriod.EndDate.AddDays(1) - effectivePeriod.StartDate).Days;
-            //    var amount = DailyAmount(effectivePeriod, budget) * effectivePeriod.EffectiveDays();
+            //    var amount = DailyAmount(effectivePeriod, budget) * effectivePeriod.TotalDays();
             //    total += amount;
 
             //    //total += GetOneMonthAmount(effectivePeriod, budgets);
@@ -107,7 +107,7 @@ namespace BudgetCalculator
             {
                 return 0;
             }
-            return DailyAmount(period, budget) * period.EffectiveDays();
+            return DailyAmount(period, budget) * period.TotalDays();
         }
 
         private static int DailyAmount(Period period, Budget budget)
