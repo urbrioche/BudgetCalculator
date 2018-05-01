@@ -27,5 +27,10 @@ namespace BudgetCalculator
         {
             get { return (LastDay.AddDays(1) - FirstDay).Days; }
         }
+
+        public int EffectiveAmount(Period period)
+        {
+            return DailyAmount() * period.OverlappingDays(new Period(FirstDay, LastDay));
+        }
     }
 }

@@ -6,7 +6,7 @@ using System.Threading;
 
 namespace BudgetCalculator
 {
-    internal class Period
+    public class Period
     {
         public Period(DateTime startDate, DateTime endDate)
         {
@@ -77,7 +77,7 @@ namespace BudgetCalculator
 
             foreach (var budget in budgets)
             {
-                var amount = budget.DailyAmount() * period.OverlappingDays(new Period(budget.FirstDay, budget.LastDay));
+                var amount = budget.EffectiveAmount(period);
                 total += amount;
             }
 
