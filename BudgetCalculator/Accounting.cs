@@ -73,31 +73,8 @@ namespace BudgetCalculator
 
         private decimal GetRangeMonthAmount(Period period, List<Budget> budgets)
         {
-            var total = 0;
-
-            foreach (var budget in budgets)
-            {
-                var amount = budget.EffectiveAmount(period);
-                total += amount;
-            }
-
-            return total;
-
-            //for (var index = 0; index <= monthCount; index++)
-            //{
-            //    var budget = GetBudgetByCurrentPeriod(period, budgets, index);
-            //    if (budget == null)
-            //    {
-            //        continue;
-            //    }
-            //    var effectivePeriod = period.OverlappingPeriod(budget);
-            //    ////var effectiveDays = (effectivePeriod.EndDate.AddDays(1) - effectivePeriod.StartDate).Days;
-            //    var amount = DailyAmount(effectivePeriod, budget) * effectivePeriod.TotalDays();
-            //    total += amount;
-
-            //    //total += GetOneMonthAmount(effectivePeriod, budgets);
-            //}
-            //return total;
+            return budgets.Sum(b => b.EffectiveAmount(period));
+            
         }
 
         private static Budget GetBudgetByCurrentPeriod(Period period, List<Budget> budgets, int index)
