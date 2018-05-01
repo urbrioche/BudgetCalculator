@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading;
 
 namespace BudgetCalculator
 {
@@ -67,21 +69,30 @@ namespace BudgetCalculator
             var monthCount = period.MonthCount();
             var total = 0;
 
-            for (var index = 0; index <= monthCount; index++)
+            foreach (var budget in budgets)
             {
-                var budget = GetBudgetByCurrentPeriod(period, budgets, index);
-                if (budget == null)
-                {
-                    continue;
-                }
                 var effectivePeriod = period.EffectivePeriod(budget);
-                ////var effectiveDays = (effectivePeriod.EndDate.AddDays(1) - effectivePeriod.StartDate).Days;
                 var amount = DailyAmount(effectivePeriod, budget) * effectivePeriod.EffectiveDays();
                 total += amount;
-
-                //total += GetOneMonthAmount(effectivePeriod, budgets);
             }
+
             return total;
+
+            //for (var index = 0; index <= monthCount; index++)
+            //{
+            //    var budget = GetBudgetByCurrentPeriod(period, budgets, index);
+            //    if (budget == null)
+            //    {
+            //        continue;
+            //    }
+            //    var effectivePeriod = period.EffectivePeriod(budget);
+            //    ////var effectiveDays = (effectivePeriod.EndDate.AddDays(1) - effectivePeriod.StartDate).Days;
+            //    var amount = DailyAmount(effectivePeriod, budget) * effectivePeriod.EffectiveDays();
+            //    total += amount;
+
+            //    //total += GetOneMonthAmount(effectivePeriod, budgets);
+            //}
+            //return total;
         }
 
         private static Budget GetBudgetByCurrentPeriod(Period period, List<Budget> budgets, int index)
