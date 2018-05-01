@@ -32,10 +32,10 @@ namespace BudgetCalculator
             return EndDate.MonthDifference(StartDate);
         }
 
-        public Period EffectivePeriod(Budget budget)
+        public Period OverlappingPeriod(Period period)
         {
-            var effectiveStart = StartDate > budget.FirstDay ? StartDate : budget.FirstDay;
-            var effectiveEnd = EndDate < budget.LastDay ? EndDate : budget.LastDay;
+            var effectiveStart = StartDate > period.StartDate ? StartDate : period.StartDate;
+            var effectiveEnd = EndDate < period.EndDate ? EndDate : period.EndDate;
             return new Period(effectiveStart, effectiveEnd);            
         }
     }
@@ -71,7 +71,7 @@ namespace BudgetCalculator
 
             foreach (var budget in budgets)
             {
-                var effectivePeriod = period.EffectivePeriod(budget);
+                var effectivePeriod = period.OverlappingPeriod(new Period(budget.FirstDay, budget.LastDay));
                 var amount = DailyAmount(effectivePeriod, budget) * effectivePeriod.EffectiveDays();
                 total += amount;
             }
@@ -85,7 +85,7 @@ namespace BudgetCalculator
             //    {
             //        continue;
             //    }
-            //    var effectivePeriod = period.EffectivePeriod(budget);
+            //    var effectivePeriod = period.OverlappingPeriod(budget);
             //    ////var effectiveDays = (effectivePeriod.EndDate.AddDays(1) - effectivePeriod.StartDate).Days;
             //    var amount = DailyAmount(effectivePeriod, budget) * effectivePeriod.EffectiveDays();
             //    total += amount;
