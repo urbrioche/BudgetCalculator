@@ -45,7 +45,7 @@ namespace BudgetCalculator
 
         public int OverlappingDays(Period period)
         {
-            if (EndDate < period.StartDate || StartDate > period.EndDate)
+            if (HasNoOverlapping(period))
             {
                 return 0;
             }
@@ -53,6 +53,11 @@ namespace BudgetCalculator
             var effectiveEnd = EndDate < period.EndDate ? EndDate : period.EndDate;
 
             return new Period(effectiveStart, effectiveEnd).TotalDays();
+        }
+
+        private bool HasNoOverlapping(Period period)
+        {
+            return EndDate < period.StartDate || StartDate > period.EndDate;
         }
     }
 
