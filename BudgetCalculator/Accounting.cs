@@ -30,7 +30,7 @@ namespace BudgetCalculator
             return EndDate.MonthDifference(StartDate);
         }
 
-        public Period OverlappingDays(Budget budget)
+        public Period EffectivePeriod(Budget budget)
         {
             var effectiveStart = StartDate > budget.FirstDay ? StartDate : budget.FirstDay;
             var effectiveEnd = EndDate < budget.LastDay ? EndDate : budget.LastDay;
@@ -56,15 +56,17 @@ namespace BudgetCalculator
 
             var period = new Period(start, end);
             var budgets = this._repo.GetAll();
-            return period.IsSameMonth()
-                ? GetOneMonthAmount(new Period(start, end), budgets)
-                : GetRangeMonthAmount(new Period(start, end), budgets);
+            return GetRangeMonthAmount(new Period(start, end), budgets);
+            //return period.IsSameMonth()
+            //    ? GetOneMonthAmount(new Period(start, end), budgets)
+            //    : GetRangeMonthAmount(new Period(start, end), budgets);
         }
 
         private decimal GetRangeMonthAmount(Period period, List<Budget> budgets)
         {
             var monthCount = period.MonthCount();
             var total = 0;
+
             for (var index = 0; index <= monthCount; index++)
             {
                 var budget = GetBudgetByCurrentPeriod(period, budgets, index);
@@ -72,8 +74,12 @@ namespace BudgetCalculator
                 {
                     continue;
                 }
-                var effectivePeriod = period.OverlappingDays(budget);
-                total += GetOneMonthAmount(effectivePeriod, budgets);
+                var effectivePeriod = period.EffectivePeriod(budget);
+                ////var effectiveDays = (effectivePeriod.EndDate.AddDays(1) - effectivePeriod.StartDate).Days;
+                var amount = DailyAmount(effectivePeriod, budget) * effectivePeriod.EffectiveDays();
+                total += amount;
+
+                //total += GetOneMonthAmount(effectivePeriod, budgets);
             }
             return total;
         }
