@@ -30,34 +30,15 @@ namespace BudgetCalculator
             TotalAmountShouldBe(0, new DateTime(2018, 3, 1), new DateTime(2018, 3, 1));
         }
 
-        private void TotalAmountShouldBe(int expected, DateTime startDate, DateTime endDate)
-        {
-            Assert.AreEqual(expected, _accounting.TotalAmount(startDate, endDate));
-        }
-
-        private Accounting BudgetCalculat(List<Budget> budgets)
-        {
-            GivenBudgets(budgets.ToArray());
-
-            _accounting = new Accounting(_repository);
-            return _accounting;
-        }
-
-        private void GivenBudgets(params Budget[] budgets)
-        {
-            _repository.GetAll().Returns(budgets.ToList());
-        }
-
+        /// <summary>
+        /// 時間起訖不合法
+        /// </summary>
+        [ExpectedException(typeof(ArgumentException))]
         [TestMethod]
-        public void 時間起訖不合法()
+        public void invalid_period()
         {
-            var target = BudgetCalculat(new List<Budget>());
-            var start = new DateTime(2018, 3, 1);
-            var end = new DateTime(2018, 2, 1);
-
-            Action actual = () => target.TotalAmount(start, end);
-
-            actual.Should().Throw<ArgumentException>();
+            GivenBudgets();
+            TotalAmountShouldBe(0, new DateTime(2018, 3, 1), new DateTime(2018, 2, 1));
         }
 
         /// <summary>
@@ -137,6 +118,16 @@ namespace BudgetCalculator
                 new Budget() { YearMonth = "201802", Amount = 280 },
                 new Budget() { YearMonth = "201803", Amount = 310 });
             TotalAmountShouldBe(1000, new DateTime(2017, 12, 1), new DateTime(2018, 3, 10));
+        }
+
+        private void TotalAmountShouldBe(int expected, DateTime startDate, DateTime endDate)
+        {
+            Assert.AreEqual(expected, _accounting.TotalAmount(startDate, endDate));
+        }
+
+        private void GivenBudgets(params Budget[] budgets)
+        {
+            _repository.GetAll().Returns(budgets.ToList());
         }
     }
 }
