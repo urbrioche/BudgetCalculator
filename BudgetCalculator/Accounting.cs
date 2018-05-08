@@ -4,25 +4,25 @@ using System.Linq;
 
 namespace BudgetCalculator
 {
-    internal class BudgetCalculat
+    internal class Accounting
     {
         private readonly IRepository<Budget> _repo;
 
-        public BudgetCalculat(IRepository<Budget> repo)
+        public Accounting(IRepository<Budget> repo)
         {
             _repo = repo;
         }
 
-        public decimal Calculate(DateTime start, DateTime end)
+        public decimal TotalAmount(DateTime startDate, DateTime endDate)
         {
-            if (start > end)
+            if (startDate > endDate)
             {
                 throw new ArgumentException();
             }
 
-            return IsSameMonth(start, end)
-                ? GetOneMonthAmount(start, end)
-                : GetRangeMonthAmount(start, end);
+            return IsSameMonth(startDate, endDate)
+                ? GetOneMonthAmount(startDate, endDate)
+                : GetRangeMonthAmount(startDate, endDate);
         }
 
         private decimal GetRangeMonthAmount(DateTime start, DateTime end)

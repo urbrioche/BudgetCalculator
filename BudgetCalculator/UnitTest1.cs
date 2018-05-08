@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
@@ -10,24 +11,41 @@ namespace BudgetCalculator
     [TestClass]
     public class UnitTest1
     {
-        [TestMethod]
-        public void 資料庫沒預算()
+        private readonly IRepository<Budget> _repository = Substitute.For<IRepository<Budget>>();
+        private Accounting _accounting;
+
+        [TestInitialize]
+        public void TestInit()
         {
-            var target = BudgetCalculat(new List<Budget>());
-            var start = new DateTime(2018, 3, 1);
-            var end = new DateTime(2018, 3, 1);
-
-            var actual = target.Calculate(start, end);
-
-            actual.Should().Be(0);
+            _accounting = new Accounting(_repository);
         }
 
-        private BudgetCalculat BudgetCalculat(List<Budget> budgets)
+        /// <summary>
+        /// 資料庫沒預算
+        /// </summary>
+        [TestMethod]
+        public void no_budgets()
         {
-            IRepository<Budget> repo = Substitute.For<IRepository<Budget>>();
-            repo.GetAll().Returns(budgets);
+            GivenBudgets();
+            TotalAmountShouldBe(0, new DateTime(2018, 3, 1), new DateTime(2018, 3, 1));
+        }
 
-            return new BudgetCalculat(repo);
+        private void TotalAmountShouldBe(int expected, DateTime startDate, DateTime endDate)
+        {
+            Assert.AreEqual(expected, _accounting.TotalAmount(startDate, endDate));
+        }
+
+        private Accounting BudgetCalculat(List<Budget> budgets)
+        {
+            GivenBudgets(budgets.ToArray());
+
+            _accounting = new Accounting(_repository);
+            return _accounting;
+        }
+
+        private void GivenBudgets(params Budget[] budgets)
+        {
+            _repository.GetAll().Returns(budgets.ToList());
         }
 
         [TestMethod]
@@ -37,7 +55,7 @@ namespace BudgetCalculator
             var start = new DateTime(2018, 3, 1);
             var end = new DateTime(2018, 2, 1);
 
-            Action actual = () => target.Calculate(start, end);
+            Action actual = () => target.TotalAmount(start, end);
 
             actual.Should().Throw<ArgumentException>();
         }
@@ -49,7 +67,7 @@ namespace BudgetCalculator
             var start = new DateTime(2018, 1, 1);
             var end = new DateTime(2018, 1, 31);
 
-            var actual = target.Calculate(start, end);
+            var actual = target.TotalAmount(start, end);
 
             actual.Should().Be(62);
         }
@@ -61,7 +79,7 @@ namespace BudgetCalculator
             var start = new DateTime(2018, 1, 1);
             var end = new DateTime(2018, 1, 15);
 
-            var actual = target.Calculate(start, end);
+            var actual = target.TotalAmount(start, end);
 
             actual.Should().Be(30);
         }
@@ -73,7 +91,7 @@ namespace BudgetCalculator
             var start = new DateTime(2018, 2, 1);
             var end = new DateTime(2018, 2, 15);
 
-            var actual = target.Calculate(start, end);
+            var actual = target.TotalAmount(start, end);
 
             actual.Should().Be(0);
         }
@@ -89,7 +107,7 @@ namespace BudgetCalculator
             var start = new DateTime(2018, 1, 1);
             var end = new DateTime(2018, 2, 28);
 
-            var actual = target.Calculate(start, end);
+            var actual = target.TotalAmount(start, end);
 
             actual.Should().Be(342);
         }
@@ -106,7 +124,7 @@ namespace BudgetCalculator
             var start = new DateTime(2018, 1, 1);
             var end = new DateTime(2018, 3, 10);
 
-            var actual = target.Calculate(start, end);
+            var actual = target.TotalAmount(start, end);
 
             actual.Should().Be(362);
         }
@@ -123,7 +141,7 @@ namespace BudgetCalculator
             var start = new DateTime(2018, 1, 1);
             var end = new DateTime(2018, 3, 10);
 
-            var actual = target.Calculate(start, end);
+            var actual = target.TotalAmount(start, end);
 
             actual.Should().Be(82);
         }
@@ -141,7 +159,7 @@ namespace BudgetCalculator
             var start = new DateTime(2017, 12, 1);
             var end = new DateTime(2018, 3, 10);
 
-            var actual = target.Calculate(start, end);
+            var actual = target.TotalAmount(start, end);
 
             actual.Should().Be(1000);
         }
