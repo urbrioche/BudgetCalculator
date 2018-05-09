@@ -54,24 +54,31 @@ namespace BudgetCalculator
             var total = 0;
             for (var index = 0; index <= monthCount; index++)
             {
-                if (index == 0)
-                {
-                    period = new Period(start, start.LastDate());
-                    total += GetOneMonthAmount(period);
-                }
-                else if (index == monthCount)
-                {
-                    period = new Period(end.FirstDate(), end);
-                    total += GetOneMonthAmount(period);
-                }
-                else
-                {
-                    var now = start.AddMonths(index);
-                    period = new Period(now.FirstDate(), now.LastDate());
-                    total += GetOneMonthAmount(period);
-                }
+                period = EffectivePeriod(index, monthCount, new Period(start, end));
+
+                total += GetOneMonthAmount(period);
             }
             return total;
+        }
+
+        private static Period EffectivePeriod(int index, int monthCount, Period period)
+        {
+            Period effectivePeriod;
+            if (index == 0)
+            {
+                effectivePeriod = new Period(period.StartDate, period.StartDate.LastDate());
+            }
+            else if (index == monthCount)
+            {
+                effectivePeriod = new Period(period.EndDate.FirstDate(), period.EndDate);
+            }
+            else
+            {
+                var now = period.StartDate.AddMonths(index);
+                effectivePeriod = new Period(now.FirstDate(), now.LastDate());
+            }
+
+            return effectivePeriod;
         }
 
         private int GetOneMonthAmount(Period period)
