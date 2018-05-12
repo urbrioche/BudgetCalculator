@@ -77,23 +77,15 @@ namespace BudgetCalculator
             foreach (var budget in budgets)
             {
                 total += budget.DailyAmount() *
-                    period.OverlappingPeriod(new Period(budget.FirstDay, budget.LastDay)).TotalDays();
+                    OverlappingDays(period, budget);
             }
 
-            return total;
+            return total;            
+        }
 
-            for (var index = 0; index <= monthCount; index++)
-            {
-                var currentBudget = GetBudgetByCurrentPeriodMonth(period, budgets, index);
-                if (currentBudget == null)
-                    continue;
-                var overlappingPeriod = period.OverlappingPeriod(new Period(currentBudget.FirstDay, currentBudget.LastDay));
-
-                total +=currentBudget.DailyAmount() * overlappingPeriod.TotalDays();
-
-                ///total += GetOneMonthAmount(overlappingPeriod, budgets);
-            }
-            return total;
+        private static int OverlappingDays(Period period, Budget budget)
+        {
+            return period.OverlappingPeriod(new Period(budget.FirstDay, budget.LastDay)).TotalDays();
         }
 
         private Budget GetBudgetByCurrentPeriodMonth(Period period, List<Budget> budgets, int index)
