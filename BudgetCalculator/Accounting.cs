@@ -72,43 +72,21 @@ namespace BudgetCalculator
 
         private static Period EffectivePeriod(int index, int monthCount, Period period, Budget budget)
         {
-            DateTime effectiveStartDate;
-            DateTime effectiveEndDate;
+            var effectiveStartDate = EffectiveStartDate(period, budget);
 
-            if (period.StartDate > budget.FirstDay)
-            {
-                effectiveStartDate = period.StartDate;
-            }
-            else
-            {
-                effectiveStartDate = budget.FirstDay;
-            }
-
-            if (period.EndDate < budget.LastDay)
-            {
-                effectiveEndDate = period.EndDate;
-            }
-            else
-            {
-                effectiveEndDate = budget.LastDay;
-            }
-            if (index == 0)
-            {
-                //effectiveStartDate = period.StartDate;
-                //effectiveEndDate = budget.LastDay;
-            }
-            else if (index == monthCount)
-            {
-                //effectiveStartDate = budget.FirstDay;
-                //effectiveEndDate = period.EndDate;
-            }
-            else
-            {
-                //effectiveStartDate = budget.FirstDay;
-                //effectiveEndDate = budget.LastDay;
-            }
-
+            var effectiveEndDate = EffectiveEndDate(period, budget);
+            
             return new Period(effectiveStartDate, effectiveEndDate);
+        }
+
+        private static DateTime EffectiveEndDate(Period period, Budget budget)
+        {
+            return period.EndDate < budget.LastDay ? period.EndDate : budget.LastDay;
+        }
+
+        private static DateTime EffectiveStartDate(Period period, Budget budget)
+        {
+            return period.StartDate > budget.FirstDay ? period.StartDate : budget.FirstDay;
         }
 
         private int GetOneMonthAmount(Period period, List<Budget> budgets)
