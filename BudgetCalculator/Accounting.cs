@@ -35,11 +35,11 @@ namespace BudgetCalculator
             return StartDate > period.StartDate ? StartDate : period.StartDate;
         }
 
-        public Period EffectivePeriod(Budget budget)
+        public Period OverlappingPeriod(Period period)
         {
-            var effectiveStartDate = EffectiveStartDate(new Period(budget.FirstDay, budget.LastDay));
+            var effectiveStartDate = EffectiveStartDate(period);
 
-            var effectiveEndDate = EffectiveEndDate(new Period(budget.FirstDay, budget.LastDay));
+            var effectiveEndDate = EffectiveEndDate(period);
             
             return new Period(effectiveStartDate, effectiveEndDate);
         }
@@ -77,7 +77,7 @@ namespace BudgetCalculator
                 var currentBudget = GetBudgetByCurrentPeriodMonth(period, budgets, index);
                 if (currentBudget == null)
                     continue;
-                var effectivePeriod = period.EffectivePeriod(currentBudget);
+                var effectivePeriod = period.OverlappingPeriod(new Period(currentBudget.FirstDay, currentBudget.LastDay));
 
                 total += GetOneMonthAmount(effectivePeriod, budgets);
             }
