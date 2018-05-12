@@ -8,7 +8,7 @@ namespace BudgetCalculator
 
         public int Amount { get; set; }
 
-        public int TotalDays
+        private int TotalDays
         {
             get
             {
@@ -17,7 +17,7 @@ namespace BudgetCalculator
             }
         }
 
-        public DateTime FirstDay
+        private DateTime FirstDay
         {
             get
             {
@@ -25,7 +25,7 @@ namespace BudgetCalculator
             }
         }
 
-        public DateTime LastDay
+        private DateTime LastDay
         {
             get
             {
@@ -33,15 +33,7 @@ namespace BudgetCalculator
             }
         }
 
-        //public DateTime LastDay
-        //{
-        //    get
-        //    {
-
-        //    }
-        //}
-
-        public int DailyAmount()
+        private int DailyAmount()
         {
             return Amount / TotalDays;
         }
