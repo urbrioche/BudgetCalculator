@@ -30,14 +30,14 @@ namespace BudgetCalculator
             return EndDate < budget.LastDay ? EndDate : budget.LastDay;
         }
 
-        public DateTime EffectiveStartDate(Budget budget)
+        public DateTime EffectiveStartDate(Period period)
         {
-            return StartDate > budget.FirstDay ? StartDate : budget.FirstDay;
+            return StartDate > period.StartDate ? StartDate : period.StartDate;
         }
 
         public Period EffectivePeriod(Budget budget)
         {
-            var effectiveStartDate = EffectiveStartDate(budget);
+            var effectiveStartDate = EffectiveStartDate(new Period(budget.FirstDay, budget.LastDay));
 
             var effectiveEndDate = EffectiveEndDate(budget);
             
