@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace BudgetCalculator
 {
-    internal class Period
+    public class Period
     {
         public Period(DateTime startDate, DateTime endDate)
         {
@@ -83,16 +83,10 @@ namespace BudgetCalculator
 
             foreach (var budget in budgets)
             {
-                total += EffectiveAmount(period, budget);
+                total += budget.EffectiveAmount(period);
             }
 
             return total;            
-        }
-
-        private static int EffectiveAmount(Period period, Budget budget)
-        {
-            return budget.DailyAmount() *
-                   period.OverlappingDays(new Period(budget.FirstDay, budget.LastDay));
         }
 
         private Budget GetBudgetByCurrentPeriodMonth(Period period, List<Budget> budgets, int index)
