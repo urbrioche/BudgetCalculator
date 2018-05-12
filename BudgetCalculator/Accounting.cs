@@ -43,6 +43,11 @@ namespace BudgetCalculator
             
             return new Period(effectiveStartDate, effectiveEndDate);
         }
+
+        public int OverlappingDays(Budget budget)
+        {
+            return OverlappingPeriod(new Period(budget.FirstDay, budget.LastDay)).TotalDays();
+        }
     }
 
     internal class Accounting
@@ -77,15 +82,10 @@ namespace BudgetCalculator
             foreach (var budget in budgets)
             {
                 total += budget.DailyAmount() *
-                    OverlappingDays(period, budget);
+                    period.OverlappingDays(budget);
             }
 
             return total;            
-        }
-
-        private static int OverlappingDays(Period period, Budget budget)
-        {
-            return period.OverlappingPeriod(new Period(budget.FirstDay, budget.LastDay)).TotalDays();
         }
 
         private Budget GetBudgetByCurrentPeriodMonth(Period period, List<Budget> budgets, int index)
