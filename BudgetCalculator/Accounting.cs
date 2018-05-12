@@ -58,7 +58,7 @@ namespace BudgetCalculator
                 var currentBudget = GetBudgetByCurrentPeriodMonth(period, budgets, index);
                 if (currentBudget == null)
                     continue;
-                var effectivePeriod = EffectivePeriod(index, monthCount, period, currentBudget);
+                var effectivePeriod = EffectivePeriod(period, currentBudget);
 
                 total += GetOneMonthAmount(effectivePeriod, budgets);
             }
@@ -70,7 +70,7 @@ namespace BudgetCalculator
             return budgets.FirstOrDefault(r => r.YearMonth == period.StartDate.AddMonths(index).ToString("yyyyMM"));
         }
 
-        private static Period EffectivePeriod(int index, int monthCount, Period period, Budget budget)
+        private static Period EffectivePeriod(Period period, Budget budget)
         {
             var effectiveStartDate = EffectiveStartDate(period, budget);
 
