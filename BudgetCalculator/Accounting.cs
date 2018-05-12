@@ -77,9 +77,11 @@ namespace BudgetCalculator
                 var currentBudget = GetBudgetByCurrentPeriodMonth(period, budgets, index);
                 if (currentBudget == null)
                     continue;
-                var effectivePeriod = period.OverlappingPeriod(new Period(currentBudget.FirstDay, currentBudget.LastDay));
+                var overlappingPeriod = period.OverlappingPeriod(new Period(currentBudget.FirstDay, currentBudget.LastDay));
 
-                total += GetOneMonthAmount(effectivePeriod, budgets);
+                total +=currentBudget.DailyAmount() * overlappingPeriod.EffectiveDays();
+
+                ///total += GetOneMonthAmount(overlappingPeriod, budgets);
             }
             return total;
         }
