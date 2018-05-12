@@ -8,6 +8,10 @@ namespace BudgetCalculator
     {
         public Period(DateTime startDate, DateTime endDate)
         {
+            if (startDate > endDate)
+            {
+                throw new ArgumentException();
+            }
             StartDate = startDate;
             EndDate = endDate;
         }
@@ -46,6 +50,9 @@ namespace BudgetCalculator
 
         public int OverlappingDays(Period period)
         {
+            if (EndDate < period.StartDate || StartDate > period.EndDate)
+                return 0;
+
             return OverlappingPeriod(period).TotalDays();
         }
     }
@@ -61,10 +68,6 @@ namespace BudgetCalculator
 
         public decimal TotalAmount(DateTime startDate, DateTime endDate)
         {
-            if (startDate > endDate)
-            {
-                throw new ArgumentException();
-            }
 
             var period = new Period(startDate, endDate);
             var budgets = this._repo.GetAll();
