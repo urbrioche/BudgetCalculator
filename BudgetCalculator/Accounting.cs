@@ -20,7 +20,7 @@ namespace BudgetCalculator
             return StartDate.Year == EndDate.Year && StartDate.Month == EndDate.Month;
         }
 
-        public int EffectiveDays()
+        public int TotalDays()
         {
             return (EndDate - StartDate).Days + 1;
         }
@@ -63,6 +63,7 @@ namespace BudgetCalculator
 
             var period = new Period(startDate, endDate);
             var budgets = this._repo.GetAll();
+            return GetRangeMonthAmount(period, budgets);
             return period.IsSameMonth()
                 ? GetOneMonthAmount(period, budgets)
                 : GetRangeMonthAmount(period, budgets);
@@ -72,6 +73,15 @@ namespace BudgetCalculator
         {
             var monthCount = period.EndDate.MonthDifference(period.StartDate);
             var total = 0;
+
+            foreach (var budget in budgets)
+            {
+                total += budget.DailyAmount() *
+                    period.OverlappingPeriod(new Period(budget.FirstDay, budget.LastDay)).TotalDays();
+            }
+
+            return total;
+
             for (var index = 0; index <= monthCount; index++)
             {
                 var currentBudget = GetBudgetByCurrentPeriodMonth(period, budgets, index);
@@ -79,7 +89,7 @@ namespace BudgetCalculator
                     continue;
                 var overlappingPeriod = period.OverlappingPeriod(new Period(currentBudget.FirstDay, currentBudget.LastDay));
 
-                total +=currentBudget.DailyAmount() * overlappingPeriod.EffectiveDays();
+                total +=currentBudget.DailyAmount() * overlappingPeriod.TotalDays();
 
                 ///total += GetOneMonthAmount(overlappingPeriod, budgets);
             }
@@ -93,7 +103,7 @@ namespace BudgetCalculator
 
         private int GetOneMonthAmount(Period period, List<Budget> budgets)
         {
-            var effectiveDays = period.EffectiveDays();
+            var effectiveDays = period.TotalDays();
 
             var budget = budgets.Get(period.StartDate);
             if (budget == null)
