@@ -24,6 +24,25 @@ namespace BudgetCalculator
         {
             return (EndDate - StartDate).Days + 1;
         }
+
+        public DateTime EffectiveEndDate(Budget budget)
+        {
+            return EndDate < budget.LastDay ? EndDate : budget.LastDay;
+        }
+
+        public DateTime EffectiveStartDate(Budget budget)
+        {
+            return StartDate > budget.FirstDay ? StartDate : budget.FirstDay;
+        }
+
+        public Period EffectivePeriod(Budget budget)
+        {
+            var effectiveStartDate = EffectiveStartDate(budget);
+
+            var effectiveEndDate = EffectiveEndDate(budget);
+            
+            return new Period(effectiveStartDate, effectiveEndDate);
+        }
     }
 
     internal class Accounting
@@ -58,7 +77,7 @@ namespace BudgetCalculator
                 var currentBudget = GetBudgetByCurrentPeriodMonth(period, budgets, index);
                 if (currentBudget == null)
                     continue;
-                var effectivePeriod = EffectivePeriod(period, currentBudget);
+                var effectivePeriod = period.EffectivePeriod(currentBudget);
 
                 total += GetOneMonthAmount(effectivePeriod, budgets);
             }
@@ -68,25 +87,6 @@ namespace BudgetCalculator
         private Budget GetBudgetByCurrentPeriodMonth(Period period, List<Budget> budgets, int index)
         {
             return budgets.FirstOrDefault(r => r.YearMonth == period.StartDate.AddMonths(index).ToString("yyyyMM"));
-        }
-
-        private static Period EffectivePeriod(Period period, Budget budget)
-        {
-            var effectiveStartDate = EffectiveStartDate(period, budget);
-
-            var effectiveEndDate = EffectiveEndDate(period, budget);
-            
-            return new Period(effectiveStartDate, effectiveEndDate);
-        }
-
-        private static DateTime EffectiveEndDate(Period period, Budget budget)
-        {
-            return period.EndDate < budget.LastDay ? period.EndDate : budget.LastDay;
-        }
-
-        private static DateTime EffectiveStartDate(Period period, Budget budget)
-        {
-            return period.StartDate > budget.FirstDay ? period.StartDate : budget.FirstDay;
         }
 
         private int GetOneMonthAmount(Period period, List<Budget> budgets)
