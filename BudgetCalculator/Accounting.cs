@@ -81,6 +81,8 @@ namespace BudgetCalculator
         {
             var total = 0;
 
+            return budgets.Sum(b => b.EffectiveAmount(period));
+
             foreach (var budget in budgets)
             {
                 total += budget.EffectiveAmount(period);
