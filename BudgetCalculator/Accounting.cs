@@ -51,11 +51,11 @@ namespace BudgetCalculator
         private int GetOneMonthAmount(Period period)
         {
             var list = this._repo.GetAll();
-            var budget = list.Get(period.StartDate)?.Amount ?? 0;
+            var budget = list.Get(period.StartDate);
+            if (budget == null)
+                return 0;
 
-            var days = period.DaysInMonth();
-
-            return (budget / days) * period.TotalDays();
+            return budget.DailyAmount() * period.TotalDays();
         }
     }
 
