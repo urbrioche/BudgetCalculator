@@ -13,16 +13,12 @@ namespace BudgetCalculator
             _repo = repo;
         }
 
-        public decimal Calculate(DateTime start, DateTime end)
+        public decimal TotalAmount(DateTime startDate, DateTime endDate)
         {
-            if (start > end)
-            {
-                throw new ArgumentException();
-            }
-
-            return IsSameMonth(start, end)
-                ? GetOneMonthAmount(start, end)
-                : GetRangeMonthAmount(start, end);
+            var period = new Period(startDate, endDate);
+            return period.IsSameMonth()
+                ? GetOneMonthAmount(startDate, endDate)
+                : GetRangeMonthAmount(startDate, endDate);
         }
 
         private decimal GetRangeMonthAmount(DateTime start, DateTime end)
@@ -48,11 +44,6 @@ namespace BudgetCalculator
             return total;
         }
 
-        private bool IsSameMonth(DateTime start, DateTime end)
-        {
-            return start.Year == end.Year && start.Month == end.Month;
-        }
-
         private int GetOneMonthAmount(DateTime start, DateTime end)
         {
             var list = this._repo.GetAll();
@@ -67,6 +58,27 @@ namespace BudgetCalculator
         private int GetValidDays(DateTime start, DateTime end)
         {
             return (end - start).Days + 1;
+        }
+    }
+
+    internal class Period
+    {
+        public Period(DateTime startDate, DateTime endDate)
+        {
+            if (startDate > endDate)
+            {
+                throw new ArgumentException();
+            }
+            StartDate = startDate;
+            EndDate = endDate;
+        }
+
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+
+        public bool IsSameMonth()
+        {
+            return this.StartDate.Year == this.EndDate.Year && this.StartDate.Month == this.EndDate.Month;
         }
     }
 

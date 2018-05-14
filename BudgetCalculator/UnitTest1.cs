@@ -100,7 +100,7 @@ namespace BudgetCalculator
 
         private void TotalAmountShouldBe(int expected, DateTime start, DateTime end)
         {
-            var actual = _accounting.Calculate(start, end);
+            var actual = _accounting.TotalAmount(start, end);
 
             actual.Should().Be(expected);
         }
