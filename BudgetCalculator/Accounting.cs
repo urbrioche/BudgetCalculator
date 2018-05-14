@@ -53,15 +53,9 @@ namespace BudgetCalculator
             var list = this._repo.GetAll();
             var budget = list.Get(period.StartDate)?.Amount ?? 0;
 
-            var days = DateTime.DaysInMonth(period.StartDate.Year, period.StartDate.Month);
-            var validDays = GetValidDays(period.StartDate, period.EndDate);
+            var days = period.DaysInMonth();
 
-            return (budget / days) * validDays;
-        }
-
-        private int GetValidDays(DateTime start, DateTime end)
-        {
-            return (end - start).Days + 1;
+            return (budget / days) * period.TotalDays();
         }
     }
 
@@ -83,6 +77,16 @@ namespace BudgetCalculator
         public bool IsSameMonth()
         {
             return this.StartDate.Year == this.EndDate.Year && this.StartDate.Month == this.EndDate.Month;
+        }
+
+        public int DaysInMonth()
+        {
+            return DateTime.DaysInMonth(StartDate.Year, StartDate.Month);
+        }
+
+        public int TotalDays()
+        {
+            return (this.EndDate - this.StartDate).Days + 1;
         }
     }
 
