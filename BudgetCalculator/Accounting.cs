@@ -17,7 +17,7 @@ namespace BudgetCalculator
         {
             var period = new Period(startDate, endDate);
             return period.IsSameMonth()
-                ? GetOneMonthAmount(startDate, endDate)
+                ? GetOneMonthAmount(period)
                 : GetRangeMonthAmount(startDate, endDate);
         }
 
@@ -29,28 +29,32 @@ namespace BudgetCalculator
             {
                 if (index == 0)
                 {
-                    total += GetOneMonthAmount(start, start.LastDate());
+                    DateTime end1 = start.LastDate();
+                    total += GetOneMonthAmount(new Period(start, end1));
                 }
                 else if (index == monthCount)
                 {
-                    total += GetOneMonthAmount(end.FirstDate(), end);
+                    DateTime start1 = end.FirstDate();
+                    total += GetOneMonthAmount(new Period(start1, end));
                 }
                 else
                 {
                     var now = start.AddMonths(index);
-                    total += GetOneMonthAmount(now.FirstDate(), now.LastDate());
+                    DateTime start1 = now.FirstDate();
+                    DateTime end1 = now.LastDate();
+                    total += GetOneMonthAmount(new Period(start1, end1));
                 }
             }
             return total;
         }
 
-        private int GetOneMonthAmount(DateTime start, DateTime end)
+        private int GetOneMonthAmount(Period period)
         {
             var list = this._repo.GetAll();
-            var budget = list.Get(start)?.Amount ?? 0;
+            var budget = list.Get(period.StartDate)?.Amount ?? 0;
 
-            var days = DateTime.DaysInMonth(start.Year, start.Month);
-            var validDays = GetValidDays(start, end);
+            var days = DateTime.DaysInMonth(period.StartDate.Year, period.StartDate.Month);
+            var validDays = GetValidDays(period.StartDate, period.EndDate);
 
             return (budget / days) * validDays;
         }
