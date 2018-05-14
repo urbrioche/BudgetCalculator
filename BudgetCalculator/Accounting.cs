@@ -4,11 +4,11 @@ using System.Linq;
 
 namespace BudgetCalculator
 {
-    internal class BudgetCalculat
+    internal class Accounting
     {
         private readonly IRepository<Budget> _repo;
 
-        public BudgetCalculat(IRepository<Budget> repo)
+        public Accounting(IRepository<Budget> repo)
         {
             _repo = repo;
         }
