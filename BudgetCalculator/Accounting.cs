@@ -17,6 +17,7 @@ namespace BudgetCalculator
         {
             var period = new Period(startDate, endDate);
             var budgets = this._repo.GetAll();
+            return GetRangeMonthAmount(period, budgets);
             return period.IsSameMonth()
                 ? GetOneMonthAmount(period, budgets)
                 : GetRangeMonthAmount(period, budgets);
@@ -26,6 +27,15 @@ namespace BudgetCalculator
         {
             var monthCount = period.MonthCount();
             var total = 0;
+
+            foreach (var budget in budgets)
+            {
+                var effectiveDays = EffectiveDays(period, budget);
+                total += budget.DailyAmount() * effectiveDays;
+            }
+
+            return total;
+
             for (var index = 0; index <= monthCount; index++)
             {
                 Budget budget = GetCurrentBudgetByPeriodMonth(period, index, budgets);
@@ -38,6 +48,17 @@ namespace BudgetCalculator
                 //total += GetOneMonthAmount(effectivePeriod, budgets);
             }
             return total;
+        }
+
+        private static int EffectiveDays(Period period, Budget budget)
+        {
+            if (period.EndDate < budget.FirstDay || period.StartDate > budget.LastDay)
+            {
+                return 0;
+            }
+            var effectivePeriod = EffectivePeriod(period, budget);
+            var effectiveDays = effectivePeriod.TotalDays();
+            return effectiveDays;
         }
 
         private Budget GetCurrentBudgetByPeriodMonth(Period period, int index, List<Budget> budgets)
@@ -60,7 +81,7 @@ namespace BudgetCalculator
                 effectiveEndDate = period.EndDate;
             }
 
-            return new Period(effectiveStartDate, effectiveEndDate);            
+            return new Period(effectiveStartDate, effectiveEndDate);
         }
 
         private int GetOneMonthAmount(Period period, List<Budget> budgets)
