@@ -30,7 +30,7 @@ namespace BudgetCalculator
 
             foreach (var budget in budgets)
             {
-                var effectiveDays = EffectiveDays(period, new Period(budget.FirstDay, budget.LastDay));
+                var effectiveDays = period.EffectiveDays(new Period(budget.FirstDay, budget.LastDay));
                 total += budget.DailyAmount() * effectiveDays;
             }
 
@@ -50,37 +50,10 @@ namespace BudgetCalculator
             //return total;
         }
 
-        private static int EffectiveDays(Period period, Period periodOfBudget)
-        {
-            if (period.EndDate < periodOfBudget.StartDate || period.StartDate > periodOfBudget.EndDate)
-            {
-                return 0;
-            }
-
-            return EffectivePeriod(period, periodOfBudget).TotalDays();
-        }
-
         private Budget GetCurrentBudgetByPeriodMonth(Period period, int index, List<Budget> budgets)
         {
             var periodMonth = period.StartDate.AddMonths(index).ToString("yyyyMM");
             return budgets.FirstOrDefault(b => b.YearMonth == periodMonth);
-        }
-
-        private static Period EffectivePeriod(Period period, Period periodOfBudget)
-        {
-            DateTime effectiveStartDate = periodOfBudget.StartDate;
-            DateTime effectiveEndDate = periodOfBudget.EndDate;
-            if (period.StartDate > periodOfBudget.StartDate)
-            {
-                effectiveStartDate = period.StartDate;
-            }
-
-            if (period.EndDate < periodOfBudget.EndDate)
-            {
-                effectiveEndDate = period.EndDate;
-            }
-
-            return new Period(effectiveStartDate, effectiveEndDate);
         }
 
         private int GetOneMonthAmount(Period period, List<Budget> budgets)
@@ -126,6 +99,33 @@ namespace BudgetCalculator
         public int MonthCount()
         {
             return EndDate.MonthDifference(StartDate);
+        }
+
+        public int EffectiveDays(Period period)
+        {
+            if (EndDate < period.StartDate || StartDate > period.EndDate)
+            {
+                return 0;
+            }
+
+            return EffectivePeriod(period).TotalDays();
+        }
+
+        public Period EffectivePeriod(Period period)
+        {
+            DateTime effectiveStartDate = period.StartDate;
+            DateTime effectiveEndDate = period.EndDate;
+            if (StartDate > period.StartDate)
+            {
+                effectiveStartDate = StartDate;
+            }
+
+            if (EndDate < period.EndDate)
+            {
+                effectiveEndDate = EndDate;
+            }
+
+            return new Period(effectiveStartDate, effectiveEndDate);
         }
     }
 
