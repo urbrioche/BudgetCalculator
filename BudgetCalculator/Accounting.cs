@@ -30,7 +30,7 @@ namespace BudgetCalculator
 
             foreach (var budget in budgets)
             {
-                total += EffectiveAmount(period, budget);
+                total += budget.EffectiveAmount(period);
             }
 
             return total;
@@ -49,11 +49,6 @@ namespace BudgetCalculator
             //return total;
         }
 
-        private static int EffectiveAmount(Period period, Budget budget)
-        {
-            return budget.DailyAmount() * period.OverlappingDays(new Period(budget.FirstDay, budget.LastDay));
-        }
-
         private Budget GetCurrentBudgetByPeriodMonth(Period period, int index, List<Budget> budgets)
         {
             var periodMonth = period.StartDate.AddMonths(index).ToString("yyyyMM");
@@ -70,7 +65,7 @@ namespace BudgetCalculator
         }
     }
 
-    internal class Period
+    public class Period
     {
         public Period(DateTime startDate, DateTime endDate)
         {
