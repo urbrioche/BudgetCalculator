@@ -25,7 +25,7 @@ namespace BudgetCalculator
 
         private decimal GetRangeMonthAmount(Period period, List<Budget> budgets)
         {
-            var monthCount = period.MonthCount();
+            return budgets.Sum(b => b.EffectiveAmount(period));
             var total = 0;
 
             foreach (var budget in budgets)
