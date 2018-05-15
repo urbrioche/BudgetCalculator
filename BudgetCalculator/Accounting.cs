@@ -30,35 +30,34 @@ namespace BudgetCalculator
 
             foreach (var budget in budgets)
             {
-                var effectiveDays = EffectiveDays(period, budget);
+                var effectiveDays = EffectiveDays(period, new Period(budget.FirstDay, budget.LastDay));
                 total += budget.DailyAmount() * effectiveDays;
             }
 
             return total;
 
-            for (var index = 0; index <= monthCount; index++)
-            {
-                Budget budget = GetCurrentBudgetByPeriodMonth(period, index, budgets);
-                if (budget == null)
-                    continue;
-                var effectivePeriod = EffectivePeriod(period, budget);
-                var effectiveDays = effectivePeriod.TotalDays();
-                total += budget.DailyAmount() * effectiveDays;
+            //for (var index = 0; index <= monthCount; index++)
+            //{
+            //    Budget budget = GetCurrentBudgetByPeriodMonth(period, index, budgets);
+            //    if (budget == null)
+            //        continue;
+            //    var effectivePeriod = EffectivePeriod(period, budget);
+            //    var effectiveDays = effectivePeriod.TotalDays();
+            //    total += budget.DailyAmount() * effectiveDays;
 
-                //total += GetOneMonthAmount(effectivePeriod, budgets);
-            }
-            return total;
+            //    //total += GetOneMonthAmount(effectivePeriod, budgets);
+            //}
+            //return total;
         }
 
-        private static int EffectiveDays(Period period, Budget budget)
+        private static int EffectiveDays(Period period, Period periodOfBudget)
         {
-            if (period.EndDate < budget.FirstDay || period.StartDate > budget.LastDay)
+            if (period.EndDate < periodOfBudget.StartDate || period.StartDate > periodOfBudget.EndDate)
             {
                 return 0;
             }
-            var effectivePeriod = EffectivePeriod(period, budget);
-            var effectiveDays = effectivePeriod.TotalDays();
-            return effectiveDays;
+
+            return EffectivePeriod(period, periodOfBudget).TotalDays();
         }
 
         private Budget GetCurrentBudgetByPeriodMonth(Period period, int index, List<Budget> budgets)
@@ -67,16 +66,16 @@ namespace BudgetCalculator
             return budgets.FirstOrDefault(b => b.YearMonth == periodMonth);
         }
 
-        private static Period EffectivePeriod(Period period, Budget budget)
+        private static Period EffectivePeriod(Period period, Period periodOfBudget)
         {
-            DateTime effectiveStartDate = budget.FirstDay;
-            DateTime effectiveEndDate = budget.LastDay;
-            if (period.StartDate > budget.FirstDay)
+            DateTime effectiveStartDate = periodOfBudget.StartDate;
+            DateTime effectiveEndDate = periodOfBudget.EndDate;
+            if (period.StartDate > periodOfBudget.StartDate)
             {
                 effectiveStartDate = period.StartDate;
             }
 
-            if (period.EndDate < budget.LastDay)
+            if (period.EndDate < periodOfBudget.EndDate)
             {
                 effectiveEndDate = period.EndDate;
             }
