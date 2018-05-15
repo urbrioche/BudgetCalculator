@@ -32,7 +32,7 @@ namespace BudgetCalculator
             }
         }
 
-        public int DailyAmount()
+        private int DailyAmount()
         {
             return Amount / TotalDays;
         }
